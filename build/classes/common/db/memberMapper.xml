@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.kopo.member.dao.MemberMapper">
+	<resultMap type="memberVO" id="memberMap">
+		<result column="USER_ID" property="id" />
+		<result column="PWD" property="password" />
+	</resultMap>
+	<select id="login" parameterType="loginVO" resultType="memberVO">
+	SELECT *
+		FROM USERS
+		WHERE USER_ID = #{id} AND PWD = #{password} 
+	</select>
+	<select id="isAdmin" parameterType="kr.ac.kopo.member.vo.MemberVO" resultType="boolean">
+	SELECT CASE WHEN ROLE_NAME = 'ADMIN' THEN 1 ELSE 0 END AS ISADMIN
+	    FROM USERS 
+	        JOIN ROLES ON ROLES.ROLE_ID = USERS.ROLE_ID
+	    WHERE USERS.USER_ID = #{id}
+	</select>
+	
+	
+	
+	<insert id="register" parameterType="kr.ac.kopo.member.vo.MemberVO">
+	INSERT INTO USERS(USER_ID, NAME, EMAIL, PWD, PHONE)
+		VALUES(#{id}, #{name}, #{email}, #{password}, #{phone})
+	</insert>
+</mapper>
