@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<properties resource="kr/ac/kopo/mybatis/db.properties" />
+
+	<typeAliases>
+		<typeAlias type="kr.ac.kopo.board.vo.BoardVO" alias="boardVO" />
+		<typeAlias type="kr.ac.kopo.member.vo.MemberVO" alias="memberVO" />
+		<typeAlias type="kr.ac.kopo.member.vo.LoginVO" alias="loginVO" />
+		<typeAlias type="kr.ac.kopo.address.vo.AddressVO" alias="addressVO" />
+	</typeAliases>
+	
+
+
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+	</environments>
+
+
+	<mappers>
+		<mapper resource="common/db/memberMapper.xml"/>
+<!-- 		<mapper resource="common/db/boardMapper.xml"/> -->
+		<mapper resource="common/db/generalBoardMapper.xml"/>
+		<mapper resource="common/db/componentMapper.xml"/>
+		<mapper resource="common/db/cartMapper.xml"/>
+		<mapper resource="common/db/addressMapper.xml"/>
+		<mapper resource="common/db/orderMapper.xml"/>
+		<mapper resource="common/db/QuotationInquiryMapper.xml" />
+		<mapper resource="common/db/QuotationAnswerMapper.xml" />
+	</mappers>
+</configuration>

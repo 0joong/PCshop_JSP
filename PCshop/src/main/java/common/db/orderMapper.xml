@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.kopo.order.dao.OrderDAO">
+	<insert id="createOrder"
+		parameterType="kr.ac.kopo.order.vo.OrderVO">
+		INSERT INTO ORDERS (
+		USER_ID, TID, TOTAL_PRICE,
+		ADDRESS_ID, PAYMENT_METHOD, STATUS,
+		CREATED_AT,
+		UPDATED_AT
+		) VALUES (
+		#{userId}, #{tid}, #{totalPrice},
+		#{addressId}, #{paymentMethod},
+		#{status},
+		SYSDATE, SYSDATE)
+	</insert>
+
+
+
+
+
+	<!-- ResultMap 정의 -->
+	<resultMap id="OrderResultMap"
+		type="kr.ac.kopo.order.vo.OrderVO">
+		<id property="orderId" column="ORDER_ID" />
+		<result property="userId" column="USER_ID" />
+		<result property="tid" column="TID" />
+		<result property="totalPrice" column="TOTAL_PRICE" />
+		<result property="addressId" column="ADDRESS_ID" />
+		<result property="paymentMethod" column="PAYMENT_METHOD" />
+		<result property="status" column="STATUS" />
+		<result property="createdAt" column="CREATED_AT" />
+		<result property="updatedAt" column="UPDATED_AT" />
+
+		<!-- AddressVO 매핑 -->
+		<association property="address"
+			javaType="kr.ac.kopo.address.vo.AddressVO">
+			<result property="name" column="NAME" />
+			<result property="phone" column="PHONE" />
+			<result property="roadAddr" column="ROAD_ADDR" />
+			<result property="detailAddr" column="DETAIL_ADDR" />
+			<result property="postalCode" column="POSTAL_CODE" />
+		</association>
+	</resultMap>
+
+	<!-- 주문 정보 가져오기 -->
+	<select id="getOrderById" parameterType="String"
+		resultMap="OrderResultMap">
+		SELECT  M1.ORDER_ID,
+				M1.USER_ID,
+				M1.TID,
+				M1.TOTAL_PRICE,
+				M1.ADDRESS_ID,
+				M1.PAYMENT_METHOD,
+				M1.STATUS,
+				M1.CREATED_AT,
+				M1.UPDATED_AT,
+				M2.NAME,
+				M2.PHONE,
+				M2.ROAD_ADDR,
+				M2.DETAIL_ADDR,
+				M2.POSTAL_CODE
+		FROM ORDERS M1
+		JOIN ADDRESS M2 ON M2.ADDRESS_ID = M1.ADDRESS_ID
+		WHERE M1.ORDER_ID = #{orderId}
+	</select>
+
+	<!-- 쿼리 수정 -->
+	<select id="getOrdersByUserId" parameterType="String"
+		resultMap="OrderResultMap">
+		SELECT ORDER_ID, USER_ID, TOTAL_PRICE, STATUS, CREATED_AT
+		FROM ORDERS
+		WHERE USER_ID = #{userId}
+		ORDER BY CREATED_AT DESC
+	</select>
+
+	<insert id="addOrderItem"
+		parameterType="kr.ac.kopo.order.vo.OrderItemVO">
+		INSERT INTO ORDER_ITEM (
+		ORDER_ID, ITEM_CD, QTY, PRICE,
+		TRACKING_NO, SHIPPING_STATUS, CREATED_AT,
+		UPDATED_AT
+		) VALUES (
+		#{orderId}, #{itemCd}, #{qty}, #{price}, NULL, 'PENDING',
+		CURRENT_TIMESTAMP,
+		CURRENT_TIMESTAMP
+		)
+	</insert>
+
+	<!-- Select Last Order ID -->
+	<select id="getLastOrderId" parameterType="string"
+		resultType="string">
+		SELECT ORDER_ID
+		FROM ORDERS
+		WHERE USER_ID = #{userId}
+		ORDER BY
+		CREATED_AT DESC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+
+
+	<select id="getOrderItemsByOrderId" parameterType="String"
+		resultType="kr.ac.kopo.order.vo.OrderItemVO">
+		SELECT
+		OI.ORDER_ID AS orderId,
+		OI.ITEM_CD AS itemCd,
+		C.NAME AS name,
+		OI.QTY AS qty,
+		OI.PRICE AS price,
+		OI.TRACKING_NO AS
+		trackingNo,
+		OI.SHIPPING_STATUS AS shippingStatus,
+		OI.CREATED_AT AS
+		createdAt,
+		OI.UPDATED_AT AS updatedAt
+		FROM ORDER_ITEM OI
+		INNER JOIN
+		COMPONENT C ON OI.ITEM_CD = C.ITEM_CD
+		WHERE
+		OI.ORDER_ID = #{orderId}
+	</select>
+	
+	<select id="findAllOrders" resultType="kr.ac.kopo.order.vo.OrderVO">
+    	SELECT ORDER_ID as orderId
+    	      ,USER_ID as userId
+    	      ,TID as tid
+    	      ,TOTAL_PRICE as totalPrice
+    	      ,ADDRESS_ID as AddressId
+    	      ,PAYMENT_METHOD as paymentMethod
+    	      ,STATUS as status
+    	      ,CREATED_AT as createdAt
+    		FROM orders
+	</select>
+	
+	<update id="updateTrackingNo">
+        UPDATE order_item
+        SET tracking_no = #{trackingNo}
+        WHERE order_id = #{orderId}
+        AND item_cd = #{itemCd}
+    </update>
+
+    <update id="updateOrderStatus">
+        UPDATE orders
+        SET status = #{status}
+        WHERE order_id = #{orderId}
+    </update>
+    
+    <select id="getOrderStatistics" parameterType="map" resultType="kr.ac.kopo.order.vo.OrderStatisticsVO">
+	    SELECT M2.NAME AS itemNm
+	          ,SUM(M1.QTY) AS sumQty
+		    FROM ORDER_ITEM M1
+		        JOIN COMPONENT M2 ON M2.ITEM_CD = M1.ITEM_CD
+		    WHERE CREATED_AT BETWEEN #{startDate} AND #{endDate}
+		      AND CATEGORY = #{category}
+		    GROUP BY M2.NAME
+		    ORDER BY sumQty DESC
+    </select>
+</mapper>
+ 

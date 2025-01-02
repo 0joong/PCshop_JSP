@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.board.quotation.dao.QuotationAnswerMapper">
+
+    <!-- 답변 생성 -->
+    <insert id="insertAnswer" parameterType="kr.ac.kopo.board.quotation.vo.QuotationAnswerVO">
+        INSERT INTO quoationAnswer (INQUIRY_ID, USER_ID, CONTENT, CREATED_AT, UPDATED_AT)
+        VALUES (#{inquiryId}, #{userId}, #{content}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <!-- 특정 질문의 모든 답변 조회 -->
+    <select id="selectAnswersByInquiryId" parameterType="int" resultType="kr.ac.kopo.board.quotation.vo.QuotationAnswerVO">
+        SELECT ANSWER_ID as answerId,
+               INQUIRY_ID as inquiryId,
+               USER_ID as userId, 
+               CONTENT, 
+               CREATED_AT as createdAt, 
+               UPDATED_AT as updatedAt
+        FROM quoationAnswer
+        WHERE INQUIRY_ID = #{inquiryId}
+        ORDER BY CREATED_AT ASC
+    </select>
+
+    <!-- 특정 답변 조회 -->
+    <select id="selectAnswerById" parameterType="int" resultType="kr.ac.kopo.board.quotation.vo.QuotationAnswerVO">
+        SELECT ANSWER_ID as answerId,
+               INQUIRY_ID as inquiryId,
+               USER_ID as userId, 
+               CONTENT, 
+               CREATED_AT as createdAt, 
+               UPDATED_AT as updatedAt
+        FROM quoationAnswer
+        WHERE ANSWER_ID = #{answerId}
+    </select>
+
+    <!-- 답변 삭제 -->
+    <delete id="deleteAnswer" parameterType="int">
+        DELETE FROM quoationAnswer
+        WHERE ANSWER_ID = #{answerId}
+    </delete>
+
+</mapper>

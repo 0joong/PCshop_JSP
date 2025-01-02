@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.kopo.board.dao.BoardMapper">
+	<resultMap type="kr.ac.kopo.board.vo.BoardVO" id="boardMap">
+		<result column="POST_ID" property="postId" />
+		<result column="USER_ID" property="userId" />
+		<result column="TITLE" property="title" />
+		<result column="CONTENT" property="content" />
+		<result column="CREATED_AT" property="createdAt" />
+		<result column="UPDATED_AT" property="updatedAt" />
+		<result column="LIKES" property="likes" />
+		<result column="VIEW_CNT" property="viewCnt" />
+		<result column="FILE_URL" property="fileUrl" />
+	</resultMap>
+
+	<select id="selectAll" resultMap="boardMap">
+		SELECT POST_ID,
+		USER_ID,
+		TITLE,
+		CONTENT,
+		CREATED_AT,
+		UPDATED_AT,
+		LIKES,
+		VIEW_CNT,
+		FILE_URL
+		FROM
+		GENERAL_POSTS
+		ORDER BY POST_ID DESC
+	</select>
+
+	<select id="selectByNo" parameterType="int" resultMap="boardMap">
+		SELECT
+		POST_ID,
+		USER_ID,
+		TITLE,
+		CONTENT,
+		CREATED_AT,
+		UPDATED_AT,
+		LIKES,
+		VIEW_CNT,
+		FILE_URL
+		FROM GENERAL_POSTS
+		WHERE POST_ID=#{no}
+	</select>
+
+	<insert id="insert" parameterType="kr.ac.kopo.board.vo.BoardVO">
+		INSERT INTO GENERAL_POSTS (POST_ID, USER_ID, TITLE, CONTENT
+		<if test="fileUrl != null">, FILE_URL</if>
+		)
+		VALUES (POST_NO_SEQ.NEXTVAL, #{userId}, #{title}, #{content}
+		<if test="fileUrl != null">, #{fileUrl}</if>
+		)
+	</insert>
+
+	<!-- 게시글 조회수 증가 -->
+	<update id="increaseViewCnt" parameterType="int">
+		UPDATE GENERAL_POSTS
+		SET VIEW_CNT = VIEW_CNT + 1
+		WHERE POST_ID = #{no}
+	</update>
+
+	<delete id="delete" parameterType="int">
+		DELETE FROM GENERAL_POSTS
+		WHERE POST_ID = #{postId}
+	</delete>
+
+	<update id="update"
+		parameterType="kr.ac.kopo.board.vo.BoardVO">
+		UPDATE GENERAL_POSTS
+		SET TITLE = #{title}, CONTENT = #{content}, UPDATED_AT = SYSDATE
+		WHERE POST_ID = #{postId}
+	</update>
+	
+	<select id="selectTotalCount" resultType="int">
+    	SELECT COUNT(*) FROM GENERAL_POSTS
+	</select>
+	
+	<select id="selectBoardList" parameterType="map" resultMap="boardMap">
+	    SELECT *
+	    FROM GENERAL_POSTS
+	    ORDER BY CREATED_AT DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
+	
+
+</mapper>

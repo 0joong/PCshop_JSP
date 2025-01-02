@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.cart.dao.CartDAO">
+
+	<select id="selectCartItem" parameterType="map"
+		resultType="kr.ac.kopo.cart.vo.CartVO">
+		SELECT M1.USER_ID, M1.ITEM_CD, M1.QUANTITY, M2.NAME,
+		M2.CATEGORY
+		FROM CART M1
+		JOIN COMPONENT M2 ON M2.ITEM_CD = M1.ITEM_CD
+		WHERE M1.USER_ID = #{userId} AND M1.ITEM_CD = #{itemCd}
+	</select>
+
+	<select id="selectCartItemsByUserId" parameterType="String"
+		resultType="kr.ac.kopo.cart.vo.CartVO">
+		SELECT M1.USER_ID as userId, M1.ITEM_CD as itemCd, M1.QUANTITY, M2.PRICE,
+		M2.NAME, M2.CATEGORY
+		FROM CART M1
+		JOIN COMPONENT M2 ON M2.ITEM_CD =
+		M1.ITEM_CD
+		WHERE M1.USER_ID = #{userId}
+	</select>
+
+
+	<!-- 장바구니 항목 추가 -->
+	<insert id="insertCartItem"
+		parameterType="kr.ac.kopo.cart.vo.CartVO">
+		INSERT INTO CART (USER_ID, ITEM_CD, QUANTITY)
+		VALUES
+		(#{userId}, #{itemCd}, #{quantity})
+	</insert>
+
+	<!-- 장바구니 항목 수량 업데이트 -->
+	<update id="updateQuantity"
+		parameterType="kr.ac.kopo.cart.vo.CartVO">
+		UPDATE CART
+		SET QUANTITY = #{quantity}
+		WHERE USER_ID =
+		#{userId} AND ITEM_CD = #{itemCd}
+	</update>
+
+	<!-- 장바구니 항목 삭제 -->
+	<delete id="deleteCartItem"
+		parameterType="kr.ac.kopo.cart.vo.CartVO">
+		DELETE FROM CART
+		WHERE USER_ID = #{userId} AND ITEM_CD = #{itemCd}
+	</delete>
+
+	<!-- 사용자별 장바구니 전체 항목 삭제 -->
+	<delete id="deleteAllCartItemsByUserId" parameterType="String">
+		DELETE
+		FROM CART
+		WHERE USER_ID = #{userId}
+	</delete>
+</mapper>

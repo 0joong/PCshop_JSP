@@ -1,0 +1,188 @@
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">상품 추가</h5>
+                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- enctype="multipart/form-data" 추가 -->
+                <form id="addProductForm" enctype="multipart/form-data">
+                    <!-- Category -->
+                    <div class="form-outline mb-3">
+                        <select id="addCategory" name="category" class="form-select" required onchange="showAdditionalFields()">
+                            <option value="" disabled selected>카테고리를 선택하세요</option>
+                            <option value="cpu">CPU</option>
+                            <option value="mainboard">Mainboard</option>
+                        </select>
+                    </div>
+
+                    <!-- Common Fields -->
+                    <div class="form-outline mb-3">
+                        <input type="text" id="addName" name="name" class="form-control" required />
+                        <label class="form-label" for="addName">이름</label>
+                    </div>
+                    <div class="form-outline mb-3">
+                        <input type="text" id="addBrand" name="brand" class="form-control" required />
+                        <label class="form-label" for="addBrand">브랜드</label>
+                    </div>
+                    <div class="form-outline mb-3">
+                        <input type="number" id="addPrice" name="price" class="form-control" required />
+                        <label class="form-label" for="addPrice">가격</label>
+                    </div>
+                    <div class="form-outline mb-3">
+                        <input type="number" id="addStock" name="stockQty" class="form-control" required />
+                        <label class="form-label" for="addStock">재고</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addThumbImgFile" class="form-label">썸네일 이미지</label>
+                        <input type="file" id="addThumbImgFile" name="thumbImgFile" class="form-control" accept="image/*" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="addDetailImgFile" class="form-label">상세 이미지</label>
+                        <input type="file" id="addDetailImgFile" name="detailImgFile" class="form-control" accept="image/*" />
+                    </div>
+
+                    <!-- Additional Fields for CPU -->
+                    <div id="cpuFields" class="additional-fields d-none">
+                        <div class="form-outline mb-3">
+                            <input type="text" id="cpuSocket" name="cpuSocket" class="form-control" required />
+                            <label class="form-label" for="cpuSocket">소켓</label>
+                        </div>
+                        <div class="form-outline mb-3">
+                            <input type="number" id="cpuCore" name="cpuCore" class="form-control" required />
+                            <label class="form-label" for="cpuCore">코어</label>
+                        </div>
+                        <div class="form-outline mb-3">
+                            <input type="number" id="cpuThread" name="cpuThread" class="form-control" required />
+                            <label class="form-label" for="cpuThread">쓰레드</label>
+                        </div>
+                        <div class="form-outline mb-3">
+                            <input type="text" id="cpuBaseClock" name="cpuBaseClock" class="form-control" placeholder="소수점 단위로 입력" required />
+                            <label class="form-label" for="cpuBaseClock">베이스 클럭</label>
+                        </div>
+                        <div class="form-outline mb-3">
+                            <input type="text" id="cpuBoostClock" name="cpuBoostClock" class="form-control" placeholder="소수점 단위로 입력" required />
+                            <label class="form-label" for="cpuBoostClock">부스트 클럭</label>
+                        </div>
+                    </div>
+
+                    <!-- Additional Fields for Mainboard -->
+                    <div id="mainboardFields" class="additional-fields d-none">
+                        <div class="form-outline mb-3">
+                            <input type="text" id="mainboardSocket" name="mainboardSocket" class="form-control" required />
+                            <label class="form-label" for="mainboardSocket">소켓</label>
+                        </div>
+                        <div class="form-outline mb-3">
+                            <input type="text" id="mainboardChipset" name="mainboardChipset" class="form-control" required />
+                            <label class="form-label" for="mainboardChipset">칩셋</label>
+                        </div>
+                        <div class="form-outline mb-3">
+                            <input type="text" id="mainboardFormFactor" name="mainboardFormFactor" class="form-control" required />
+                            <label class="form-label" for="mainboardFormFactor">폼팩터</label>
+                        </div>
+                        <div class="form-outline mb-3">
+                            <input type="number" id="mainboardMemSlot" name="mainboardMemSlot" class="form-control" required />
+                            <label class="form-label" for="mainboardMemSlot">메모리 슬롯</label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="button" class="btn btn-primary w-100" onclick="addProduct()">추가</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function showAdditionalFields() {
+        const category = document.getElementById('addCategory').value;
+        document.getElementById('cpuFields').classList.add('d-none');
+        document.getElementById('mainboardFields').classList.add('d-none');
+
+        if (category === 'cpu') {
+            document.getElementById('cpuFields').classList.remove('d-none');
+        } else if (category === 'mainboard') {
+            document.getElementById('mainboardFields').classList.remove('d-none');
+        }
+    }
+</script>
+
+
+
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editProductModal" tabindex="-1"
+	aria-labelledby="editProductModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="editProductModalLabel">상품 정보 변경</h5>
+				<button type="button" class="btn-close" data-mdb-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<!-- enctype="multipart/form-data" 추가 -->
+				<form id="editProductForm" enctype="multipart/form-data">
+					<!-- Hidden Field for ID -->
+					<input type="hidden" id="editId" name="itemCd" />
+
+					<!-- Category -->
+					<div class="form-outline mb-3">
+						<input type="text" id="editCategory" name="category"
+							class="form-control" required /> <label class="form-label"
+							for="editCategory">카테고리</label>
+					</div>
+
+					<!-- Name -->
+					<div class="form-outline mb-3">
+						<input type="text" id="editName" name="name" class="form-control"
+							required /> <label class="form-label" for="editName">이름</label>
+					</div>
+
+					<!-- Brand -->
+					<div class="form-outline mb-3">
+						<input type="text" id="editBrand" name="brand"
+							class="form-control" required /> <label class="form-label"
+							for="editBrand">브랜드</label>
+					</div>
+
+					<!-- Price -->
+					<div class="form-outline mb-3">
+						<input type="number" id="editPrice" name="price"
+							class="form-control" required /> <label class="form-label"
+							for="editPrice">가격</label>
+					</div>
+
+					<!-- Stock Quantity -->
+					<div class="form-outline mb-3">
+						<input type="number" id="editStock" name="stockQty"
+							class="form-control" required /> <label class="form-label"
+							for="editStock">재고</label>
+					</div>
+
+					<!-- Thumbnail File Upload -->
+					<div class="mb-3">
+						<label for="editThumbImgFile" class="form-label">썸네일 이미지</label> <input
+							type="file" id="editThumbImgFile" name="thumbImgFile"
+							class="form-control" accept="image/*" />
+					</div>
+
+					<!-- Detail Image File Upload -->
+					<div class="mb-3">
+						<label for="editDetailImgFile" class="form-label">상세 이미지</label> <input
+							type="file" id="editDetailImgFile" name="detailImgFile"
+							class="form-control" accept="image/*" />
+					</div>
+
+					<!-- Submit Button -->
+					<button type="button" class="btn btn-primary w-100"
+						onclick="updateProduct()">수정</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.address.dao.AddressDAO">
+
+	<resultMap id="AddressResultMap"
+		type="kr.ac.kopo.address.vo.AddressVO">
+		<id property="addressId" column="ADDRESS_ID" />
+		<result property="userId" column="USER_ID" />
+		<result property="name" column="NAME" />
+		<result property="phone" column="PHONE" />
+		<result property="roadAddr" column="ROAD_ADDR" />
+		<result property="detailAddr" column="DETAIL_ADDR" />
+		<result property="postalCode" column="POSTAL_CODE" />
+		<result property="extraAddr" column="EXTRA_ADDR" />
+		<result property="alias" column="ALIAS" />
+		<result property="isDefault" column="IS_DEFAULT" />
+		<result property="createdAt" column="CREATED_AT" />
+		<result property="updatedAt" column="UPDATED_AT" />
+	</resultMap>
+
+	<insert id="insertAddress"
+		parameterType="kr.ac.kopo.address.vo.AddressVO">
+		INSERT INTO ADDRESS (ADDRESS_ID, USER_ID, NAME, PHONE,
+		ROAD_ADDR,
+		DETAIL_ADDR, POSTAL_CODE, EXTRA_ADDR, IS_DEFAULT, ALIAS,
+		CREATED_AT, UPDATED_AT)
+		VALUES (ADDRESS_NO_SEQ.NEXTVAL, #{userId},
+		#{name}, #{phone}, #{roadAddr},
+		#{detailAddr}, #{postalCode},
+		#{extraAddr}, #{isDefault}, #{alias},
+		CURRENT_TIMESTAMP,
+		CURRENT_TIMESTAMP)
+	</insert>
+
+	<update id="resetDefaultAddress" parameterType="String">
+		UPDATE ADDRESS
+		SET IS_DEFAULT = 'F'
+		WHERE USER_ID = #{userId} AND IS_DEFAULT = 'T'
+	</update>
+
+	<select id="selectAddressesByUserId" parameterType="String"
+		resultMap="AddressResultMap">
+		SELECT ADDRESS_ID, USER_ID, NAME, PHONE, ROAD_ADDR, DETAIL_ADDR,
+		POSTAL_CODE, EXTRA_ADDR, IS_DEFAULT, ALIAS, CREATED_AT, UPDATED_AT
+		FROM ADDRESS
+		WHERE USER_ID = #{userId}
+	</select>
+</mapper>

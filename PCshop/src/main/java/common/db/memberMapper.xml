@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.kopo.member.dao.MemberMapper">
+	<resultMap type="memberVO" id="memberMap">
+		<result column="USER_ID" property="id" />
+		<result column="PWD" property="password" />
+		<result column="ROLE_NAME" property="role" />
+	</resultMap>
+	<select id="login" parameterType="kr.ac.kopo.member.vo.LoginVO"
+		resultMap="memberMap">
+		SELECT USER_ID, NAME, EMAIL, PHONE, REG_DATE, ROLE_NAME
+		FROM USERS
+			JOIN ROLES ON USERS.ROLE_ID = ROLES.ROLE_ID
+		WHERE USER_ID = #{id} AND PWD = #{password}
+	</select>
+	<select id="isAdmin"
+		parameterType="kr.ac.kopo.member.vo.MemberVO" resultType="boolean">
+		SELECT CASE WHEN ROLE_NAME = 'ADMIN' THEN 1 ELSE 0 END AS ISADMIN
+		FROM USERS
+		JOIN ROLES ON ROLES.ROLE_ID = USERS.ROLE_ID
+		WHERE USERS.USER_ID = #{id}
+	</select>
+
+	<select id="getInfoById" parameterType="String"
+		resultType="kr.ac.kopo.member.vo.MemberVO">
+		SELECT USER_ID as id
+	    	  ,NAME as name
+	    	  ,EMAIL as email
+	    	  ,PWD as password
+	    	  ,PHONE as phone
+	    	  ,ROLE_NAME as role
+	    	  ,TO_CHAR(REG_DATE, 'YYYY-MM-DD') as regDate
+    		FROM USERS M1
+    			JOIN ROLES M2 ON M2.ROLE_ID = M1.ROLE_ID
+    		WHERE USER_ID = #{id}
+	</select>
+
+
+	<insert id="register"
+		parameterType="kr.ac.kopo.member.vo.MemberVO">
+		INSERT INTO USERS(USER_ID, NAME, EMAIL, PWD, PHONE)
+		VALUES(#{id}, #{name},
+		#{email}, #{password}, #{phone})
+	</insert>
+
+	<!-- 아이디로 회원 정보 조회 -->
+	<select id="countById" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM USERS WHERE USER_ID = #{id}
+	</select>
+
+	<select id="getPasswordByUserId" parameterType="String"
+		resultType="String">
+		SELECT PWD
+		FROM USERS
+		WHERE USER_ID = #{userId}
+	</select>
+
+	<delete id="deleteByUserId" parameterType="String">
+		DELETE FROM USERS
+		WHERE USER_ID = #{userId}
+	</delete>
+	
+	<select id="findAllUsers" resultType="kr.ac.kopo.member.vo.MemberVO">
+    	SELECT USER_ID as id
+	    	  ,NAME as name
+	    	  ,EMAIL as email
+	    	  ,PWD as password
+	    	  ,PHONE as phone
+	    	  ,ROLE_ID as role
+	    	  ,TO_CHAR(REG_DATE, 'YYYY-MM-DD') as regDate
+    		FROM USERS
+	</select>
+
+	<select id="findUsersByKeyword" parameterType="string" resultType="kr.ac.kopo.member.vo.MemberVO">
+	    SELECT USER_ID as id
+	    	  ,NAME as name
+	    	  ,EMAIL as email
+	    	  ,PWD as password
+	    	  ,PHONE as phone
+	    	  ,ROLE_ID as role
+	    	  ,TO_CHAR(REG_DATE, 'YYYY-MM-DD') as regDate
+			FROM USERS 
+			WHERE name LIKE '%' || #{keyword} || '%' OR user_id LIKE '%' || #{keyword} || '%'	    
+	</select>
+	
+	<delete id="deleteUserById" parameterType="string">
+	    DELETE 
+	    	FROM USERS
+	    	WHERE USER_ID = #{userId}
+	</delete>
+
+	<update id="updateUserInfo" parameterType="kr.ac.kopo.member.vo.MemberVO">
+	    UPDATE USERS
+		    SET EMAIL = #{email},
+		        PHONE = #{phone}
+		        <if test="password != null and password != ''">
+		        	,PWD = #{password}
+		        </if>
+		    WHERE USER_ID = #{id}
+	</update>
+</mapper>

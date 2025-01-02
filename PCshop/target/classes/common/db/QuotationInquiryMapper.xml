@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="kr.ac.kopo.quotation.dao.QuotationInquiryMapper">
+
+	<resultMap id="QuotationInquiryResultMap"
+		type="kr.ac.kopo.board.quotation.vo.QuotationInquiryVO">
+		<result property="postId" column="POST_ID" />
+		<result property="userId" column="USER_ID" />
+		<result property="title" column="TITLE" />
+		<result property="content" column="CONTENT" />
+		<result property="createdAt" column="CREATED_AT" />
+		<result property="updatedAt" column="UPDATED_AT" />
+		<result property="viewCnt" column="VIEW_CNT" />
+		<result property="ansCnt" column="ANS_CNT" />
+	</resultMap>
+
+
+	<select id="getAllInquiries"
+		resultMap="QuotationInquiryResultMap">
+		SELECT POST_ID, USER_ID, TITLE, CONTENT, CREATED_AT, UPDATED_AT, VIEW_CNT,
+		ANS_CNT
+		FROM quoationInquiry
+		ORDER BY CREATED_AT DESC
+	</select>
+
+
+	<select id="getInquiryById" parameterType="int"
+		resultMap="QuotationInquiryResultMap">
+		SELECT POST_ID, USER_ID, TITLE, CONTENT, CREATED_AT, UPDATED_AT, VIEW_CNT,
+		ANS_CNT
+		FROM quoationInquiry
+		WHERE POST_ID = #{postId}
+	</select>
+
+
+	<!-- 문의 생성 -->
+	<insert id="createInquiry"
+		parameterType="kr.ac.kopo.board.quotation.vo.QuotationInquiryVO">
+		INSERT INTO quoationInquiry (USER_ID, TITLE, CONTENT)
+		VALUES (#{userId}, #{title}, #{content})
+	</insert>
+
+
+	<!-- 문의 수정 -->
+	<update id="updateInquiry"
+		parameterType="kr.ac.kopo.board.quotation.vo.QuotationInquiryVO">
+		UPDATE quoationInquiry
+		SET TITLE = #{title},
+		CONTENT =
+		#{content},
+		UPDATED_AT = CURRENT_TIMESTAMP
+		WHERE POST_ID = #{postId}
+	</update>
+
+	<!-- 문의 삭제 -->
+	<delete id="deleteInquiry" parameterType="int">
+		DELETE FROM
+		quoationInquiry
+		WHERE POST_ID = #{postId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.kopo.component.dao.ComponentMapper">
+
+	<!-- 카테고리별 부품 조회 -->
+	<select id="getComponentsByCategory" parameterType="string"
+		resultType="kr.ac.kopo.product.vo.ComponentVO">
+		SELECT ITEM_CD AS itemCd,
+		CATEGORY AS category,
+		NAME AS name,
+		BRAND AS brand,
+		PRICE AS price,
+		STOCK_QTY AS stockQty,
+		THUMB_IMG_URL AS
+		thumbImgUrl,
+		DETAIL_IMG_URL AS detailImgUrl
+		FROM COMPONENT
+		WHERE CATEGORY
+		= #{category}
+	</select>
+
+	<!-- 특정 부품 조회 -->
+	<select id="getComponentById" parameterType="int"
+		resultType="kr.ac.kopo.product.vo.ComponentVO">
+		SELECT ITEM_CD AS itemCd,
+		CATEGORY AS category,
+		NAME AS name,
+		BRAND AS brand,
+		PRICE AS price,
+		STOCK_QTY AS stockQty,
+		THUMB_IMG_URL AS
+		thumbImgUrl,
+		DETAIL_IMG_URL AS detailImgUrl
+		FROM COMPONENT
+		WHERE ITEM_CD
+		= #{itemCd}
+	</select>
+
+	<select id="getAllComponents"
+		resultType="kr.ac.kopo.product.vo.ComponentVO">
+		SELECT
+		ITEM_CD AS itemCd,
+		CATEGORY AS category,
+		NAME AS name,
+		BRAND AS brand,
+		PRICE AS price,
+		STOCK_QTY AS stockQty,
+		THUMB_IMG_URL AS
+		thumbImgUrl,
+		DETAIL_IMG_URL AS detailImgUrl
+		FROM COMPONENT
+	</select>
+
+	<!-- CPU 소켓 정보 가져오기 -->
+	<select id="getCpuSocketByItemId" parameterType="int"
+		resultType="string">
+		SELECT SOCKET
+		FROM CPU_INFO
+		WHERE ITEM_CD = #{itemCd}
+	</select>
+
+	<!-- 메인보드 소켓 정보 가져오기 -->
+	<select id="getMainboardSocketByItemId" parameterType="int"
+		resultType="string">
+		SELECT SOCKET
+		FROM MAINBOARD_INFO
+		WHERE ITEM_CD = #{itemCd}
+	</select>
+
+
+	<!-- 부품 삽입 -->
+	<insert id="insertComponent" parameterType="kr.ac.kopo.product.vo.ComponentVO">
+	    <selectKey keyProperty="itemCd" resultType="int" order="BEFORE">
+	        SELECT ITEM_CD_SEQ.NEXTVAL AS itemCd FROM DUAL
+	    </selectKey>
+	    INSERT INTO COMPONENT (ITEM_CD, CATEGORY, NAME, BRAND, PRICE, STOCK_QTY
+	        <if test="thumbImgUrl != null and thumbImgUrl != ''">
+	            , THUMB_IMG_URL
+	        </if>
+	        <if test="detailImgUrl != null and detailImgUrl != ''">
+	            , DETAIL_IMG_URL
+	        </if>
+	    )
+	    VALUES (
+	        #{itemCd},
+	        #{category},
+	        #{name},
+	        #{brand},
+	        #{price},
+	        #{stockQty}
+	        <if test="thumbImgUrl != null and thumbImgUrl != ''">
+	            , #{thumbImgUrl}
+	        </if>
+	        <if test="detailImgUrl != null and detailImgUrl != ''">
+	            , #{detailImgUrl}
+	        </if>
+	    )
+	</insert>
+
+
+
+
+	<!-- 부품 수정 -->
+	<update id="updateComponent"
+		parameterType="kr.ac.kopo.product.vo.ComponentVO">
+		UPDATE COMPONENT
+		SET CATEGORY = #{category},
+		NAME =
+		#{name},
+		BRAND = #{brand},
+		PRICE = #{price},
+		STOCK_QTY = #{stockQty},
+		THUMB_IMG_URL = #{thumbImgUrl},
+		DETAIL_IMG_URL = #{detailImgUrl}
+		WHERE
+		ITEM_CD = #{itemCd}
+	</update>
+
+	<!-- 부품 삭제 -->
+	<delete id="deleteComponent" parameterType="int">
+		DELETE FROM COMPONENT
+		WHERE ITEM_CD = #{itemCd}
+	</delete>
+
+    <!-- CPU 정보 추가 -->
+    <insert id="addCPUInfo" parameterType="kr.ac.kopo.component.vo.CPUInfoVO">
+        INSERT INTO cpu_info (item_cd, socket, core, thread, base_clk, boost_clk)
+        VALUES (#{itemCd}, #{socket}, #{core}, #{thread}, #{baseClock}, #{boostClock})
+    </insert>
+
+    <!-- Mainboard 정보 추가 -->
+    <insert id="addMainboardInfo" parameterType="kr.ac.kopo.component.vo.MainboardInfoVO">
+        INSERT INTO mainboard_info (item_cd, socket, chipset, form_factor, mem_slots)
+        VALUES (#{itemCd}, #{socket}, #{chipset}, #{formFactor}, #{memSlot})
+    </insert>
+
+</mapper>
